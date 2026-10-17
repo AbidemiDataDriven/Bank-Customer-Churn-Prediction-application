@@ -3,7 +3,7 @@ matplotlib
 catboost
 xgboost
 lightgbm
-scikit-learn
+scikit-learn==1.9.0
 pandas 
 joblib
 category_encoders
@@ -14,3 +14,4 @@ gunicorn
 Flask
 numpy
 pandas
+pyarrow
