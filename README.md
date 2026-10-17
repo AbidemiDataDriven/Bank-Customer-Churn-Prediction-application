@@ -92,7 +92,7 @@ python train.py
 python app.py
 ```
 
-Open **http://localhost:5000**.
+Open **https://bank-customer-churn-prediction-g6gk.onrender.com/**.
 
 `train.py` prints the average churn rate, AUC, accuracy and recall when it finishes. Step 4 is optional if `models/churn_model.joblib` and `models/stats.json` already exist.
 
