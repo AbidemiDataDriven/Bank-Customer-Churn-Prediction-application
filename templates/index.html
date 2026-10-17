@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ChurnAI | Retention Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef1f5;--card:#fff;--ink:#0f2742;--mute:#5d6f86;--line:#d9e0ea;--navy:#123c73;--low:#1f8a70;--mid:#d98e04;--high:#c8362b;--soft:#e8eef7;
+--sans:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+@media(prefers-color-scheme:dark){:root{--bg:#0b1624;--card:#12233a;--ink:#e6edf6;--mute:#93a4bb;--line:#233a57;--navy:#6ea4f0;--soft:#183050;--low:#38b793;--mid:#f0b23a;--high:#ef6a5e}}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--sans);padding-top:env(safe-area-inset-top,0)}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:14px 24px;background:var(--card);border-bottom:1px solid var(--line)}
+.brand{font-weight:600;font-size:18px;letter-spacing:-.01em}.brand small{display:block;font:400 12px var(--sans);color:var(--mute)}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav button{font:500 14px var(--sans);background:none;border:0;color:var(--mute);padding:8px 14px;border-radius:8px;cursor:pointer}
+nav button.on{background:var(--soft);color:var(--navy)}
+main{max-width:1180px;margin:0 auto;padding:22px 20px 60px}
+.tab{display:none}.tab.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px}
+h2{font-size:17px;margin:0 0 4px;font-weight:600}h3{font-size:14px;margin:0 0 10px;font-weight:600}
+.sub{color:var(--mute);font-size:13px;margin:0 0 14px}
+.sim{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:18px}
+@media(max-width:860px){.sim{grid-template-columns:1fr}}
+.field{margin-bottom:14px}.field label{display:flex;justify-content:space-between;font-size:13px;color:var(--mute);margin-bottom:4px}
+.field label b{color:var(--ink);font:500 13px var(--mono)}
+input[type=range]{width:100%;accent-color:var(--navy)}
+select,input[type=search]{width:100%;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{flex:1;padding:8px 0;border:0;background:none;color:var(--ink);font:500 13px var(--mono);cursor:pointer;border-right:1px solid var(--line)}
+.seg button:last-child{border:0}.seg button.on{background:var(--navy);color:var(--card)}
+.sw{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line)}
+.sw input{appearance:none;width:42px;height:24px;background:var(--line);border-radius:12px;position:relative;cursor:pointer;transition:.15s}
+.sw input:after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.15s}
+.sw input:checked{background:var(--navy)}.sw input:checked:after{left:21px}
+.right{display:flex;flex-direction:column;gap:18px}
+.dialrow{display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:center}
+@media(max-width:600px){.dialrow{grid-template-columns:1fr}}
+.verdict{font-size:20px;font-weight:600;margin:0 0 6px}.verdict.low{color:var(--low)}.verdict.mid{color:var(--mid)}.verdict.high{color:var(--high)}
+.bars .row{display:grid;grid-template-columns:110px 1fr 56px;gap:10px;align-items:center;font-size:13px;margin:7px 0}
+.track{position:relative;height:14px;background:var(--soft);border-radius:4px}
+.track i{position:absolute;top:0;bottom:0;border-radius:3px}
+.track:before{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--mute)}
+.num{font:500 12px var(--mono);text-align:right}
+.play{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.play:first-of-type{border:0}.play button,.btn{font:500 13px var(--sans);border:1px solid var(--navy);color:var(--navy);background:none;border-radius:8px;padding:7px 12px;cursor:pointer}
+.play button:hover,.btn:hover{background:var(--navy);color:var(--card)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px}
+.hb{display:grid;grid-template-columns:80px 1fr 90px;gap:10px;align-items:center;margin:8px 0;font-size:13px}
+.hbt{position:relative;height:18px;background:var(--soft);border-radius:4px}
+.hbt i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--navy)}
+.hbt u{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--high)}
+.legend{font-size:12px;color:var(--mute)}.legend s{display:inline-block;width:10px;height:3px;background:var(--high);text-decoration:none;vertical-align:middle;margin-right:4px}
+.tbl{max-height:560px;overflow:auto;margin-top:12px;border:1px solid var(--line);border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{position:sticky;top:0;background:var(--soft);text-align:left;padding:9px 10px;font-weight:600;white-space:nowrap}
+td{padding:8px 10px;border-top:1px solid var(--line);white-space:nowrap}
+tbody tr{cursor:pointer}tbody tr:hover{background:var(--soft)}
+.pill{font:500 12px var(--mono);padding:2px 8px;border-radius:10px;color:#fff}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}.kpi b{display:block;font:500 24px var(--mono)}.kpi span{font-size:12px;color:var(--mute)}
+.cm{display:grid;grid-template-columns:auto 1fr 1fr;gap:6px;align-items:stretch;font-size:13px;max-width:420px}
+.cm div{padding:14px;border-radius:8px;text-align:center}.cm .h{color:var(--mute);padding:6px;font-size:12px}.cm b{display:block;font:500 22px var(--mono)}
+.ok{background:color-mix(in srgb,var(--low) 18%,transparent)}.bad{background:color-mix(in srgb,var(--high) 18%,transparent)}
+svg text{fill:var(--mute);font:11px var(--mono)}
+.note{font-size:12px;color:var(--mute);margin-top:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">ChurnAI<small>Retention dashboard</small></div>
+  <nav id="nav">
+    <button data-t="sim" class="on">Simulator</button><button data-t="ins">Insights</button>
+    <button data-t="cus">Customers</button><button data-t="mod">Model check</button>
+  </nav>
+</header>
+<main>
+
+<section class="tab on" id="sim"><div class="sim">
+  <div class="card">
+    <h2>Customer profile</h2><p class="sub">Move anything. The score updates as you go.</p>
+    <div class="field"><label>Credit score <b id="v_CreditScore"></b></label><input type="range" id="CreditScore" min="300" max="850" step="1"></div>
+    <div class="field"><label>Age <b id="v_Age"></b></label><input type="range" id="Age" min="18" max="92" step="1"></div>
+    <div class="field"><label>Tenure (years) <b id="v_Tenure"></b></label><input type="range" id="Tenure" min="0" max="10" step="1"></div>
+    <div class="field"><label>Balance (€) <b id="v_Balance"></b></label><input type="range" id="Balance" min="0" max="250000" step="500"></div>
+    <div class="field"><label>Estimated salary (€) <b id="v_EstimatedSalary"></b></label><input type="range" id="EstimatedSalary" min="0" max="200000" step="500"></div>
+    <div class="field"><label>Products held</label><div class="seg" id="NumOfProducts"><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button></div></div>
+    <div class="two">
+      <div class="field"><label>Country</label><select id="Geography"></select></div>
+      <div class="field"><label>Gender</label><select id="Gender"></select></div>
+    </div>
+    <div class="sw"><span>Has credit card</span><input type="checkbox" id="HasCrCard"></div>
+    <div class="sw"><span>Active member</span><input type="checkbox" id="IsActiveMember"></div>
+    <p class="note" id="who"></p>
+  </div>
+  <div class="right">
+    <div class="card dialrow">
+      <svg viewBox="0 0 240 150" id="dial" role="img" aria-label="Churn risk dial"></svg>
+      <div><p class="verdict" id="verdict"></p><p class="sub" id="vsavg" style="margin:0"></p></div>
+    </div>
+    <div class="card bars"><h2>Why this score</h2><p class="sub">Each bar is how far that trait moves the score compared with a typical customer. Right means more likely to leave.</p><div id="why"></div></div>
+    <div class="card"><h2>Retention playbook</h2><p class="sub">Actions ranked by how much each lowers the risk. Click one to apply it.</p><div id="play"></div></div>
+  </div>
+</div></section>
+
+<section class="tab" id="ins"><div class="card" style="margin-bottom:18px"><h2>What drives churn</h2><p class="sub">Share of customers who left in each group. The red line is the <span id="avg"></span>% average across all customers.</p></div><div class="grid2" id="insgrid"></div></section>
+
+<section class="tab" id="cus"><div class="card"><h2>Customer list</h2><p class="sub">400 customers from your data that the model did not train on, scored by the model. Click a row to load it into the simulator.</p>
+  <input type="search" id="q" placeholder="Search by surname or customer ID">
+  <div class="tbl"><table><thead><tr><th>ID</th><th>Surname</th><th>Country</th><th>Age</th><th>Products</th><th>Active</th><th>Balance</th><th>Risk</th><th>Left?</th></tr></thead><tbody id="rows"></tbody></table></div></div></section>
+
+<section class="tab" id="mod"><div class="kpis" id="kpis"></div>
+  <div class="grid2">
+    <div class="card"><h3>Separation of leavers and stayers</h3><p class="sub">Share of each group at each score. Less overlap means a better model.</p><svg viewBox="0 0 360 200" id="sep"></svg></div>
+    <div class="card"><h3>ROC curve</h3><p class="sub">Leavers caught against stayers wrongly flagged.</p><svg viewBox="0 0 260 230" id="roc"></svg></div>
+    <div class="card"><h3>Correct and wrong calls</h3><p class="sub" id="cmsub"></p><div class="cm" id="cm"></div></div>
+  </div><p class="note">All figures use a 20% hold-out of your data that the model never saw during training. At the 50% cut-off the model misses roughly half of the leavers, so treat the risk score as a ranking rather than a yes/no verdict.</p>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id),F=["CreditScore","Age","Tenure","Balance","EstimatedSalary"];
+let S,state,seq=0,timer;
+const eur=n=>"€"+Math.round(n).toLocaleString("en-US"),pct=p=>(p*100).toFixed(1)+"%";
+const col=p=>p<.2?"var(--low)":p<.5?"var(--mid)":"var(--high)";
+
+document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("#nav button,.tab").forEach(e=>e.classList.remove("on"));
+  b.classList.add("on");$(b.dataset.t).classList.add("on")});
+
+function setState(s){state={...s};
+  F.forEach(k=>{$(k).value=state[k]});
+  ["Geography","Gender"].forEach(k=>$(k).value=state[k]);
+  $("HasCrCard").checked=!!+state.HasCrCard;$("IsActiveMember").checked=!!+state.IsActiveMember;
+  document.querySelectorAll("#NumOfProducts button").forEach(b=>b.classList.toggle("on",+b.dataset.v==state.NumOfProducts));
+  labels();run()}
+function labels(){F.forEach(k=>$("v_"+k).textContent=["Balance","EstimatedSalary"].includes(k)?eur(state[k]):state[k])}
+function run(){clearTimeout(timer);timer=setTimeout(async()=>{
+  const my=++seq;
+  try{const r=await fetch("/api/predict",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(state)});
+    const d=await r.json();if(my!==seq)return;if(d.error)throw Error(d.error);render(d)}
+  catch(e){$("verdict").textContent="Could not score: "+e.message}},110)}
+
+function dial(p){const a=Math.PI*(1-p),cx=120,cy=125,r=95;
+  const pt=(t,rr)=>[cx+rr*Math.cos(t),cy-rr*Math.sin(t)];
+  const arc=(t0,t1)=>{const [x0,y0]=pt(t0,r),[x1,y1]=pt(t1,r);return `M${x0} ${y0}A${r} ${r} 0 0 1 ${x1} ${y1}`};
+  const [nx,ny]=pt(a,r-14),b=S.base_rate/100,[bx0,by0]=pt(Math.PI*(1-b),r-10),[bx1,by1]=pt(Math.PI*(1-b),r+10);
+  $("dial").innerHTML=`<path d="${arc(Math.PI,0)}" stroke="var(--soft)" stroke-width="18" fill="none" stroke-linecap="round"/>
+  ${p>0?`<path d="${arc(Math.PI,a)}" stroke="${col(p)}" stroke-width="18" fill="none" stroke-linecap="round"/>`:""}
+  <line x1="${bx0}" y1="${by0}" x2="${bx1}" y2="${by1}" stroke="var(--ink)" stroke-width="2"/>
+  <text x="${cx}" y="${cy-18}" text-anchor="middle" style="font:500 38px var(--mono);fill:${col(p)}">${Math.round(p*100)}%</text>
+  <text x="${cx}" y="${cy+4}" text-anchor="middle">chance of leaving</text>
+  <text x="25" y="145" text-anchor="middle">0%</text><text x="215" y="145" text-anchor="middle">100%</text>`}
+
+function render(d){const p=d.prob,base=S.base_rate/100;dial(p);
+  const lv=p<.2?["low","Likely to stay"]:p<.5?["mid","Worth watching"]:["high","Likely to leave"];
+  $("verdict").className="verdict "+lv[0];$("verdict").textContent=lv[1];
+  const r=p/base;$("vsavg").textContent=`${pct(p)} against a ${S.base_rate}% average. That is ${r>=1?r.toFixed(1)+"× the":(r).toFixed(1)+"× the"} typical customer's risk.`;
+  const mx=Math.max(.05,...d.explain.map(e=>Math.abs(e.effect)));
+  $("why").innerHTML=d.explain.map(e=>{const w=Math.abs(e.effect)/mx*50,up=e.effect>0;
+    return `<div class="row"><span>${e.label}</span><div class="track"><i style="${up?"left:50%":"right:50%"};width:${w}%;background:${up?"var(--high)":"var(--low)"}"></i></div><span class="num">${up?"+":"−"}${Math.abs(e.effect*100).toFixed(1)}</span></div>`}).join("")+`<p class="note">Numbers are percentage points of churn risk.</p>`;
+  $("play").innerHTML=d.playbook.length?d.playbook.map((a,i)=>`<div class="play"><div><b>${a.title}</b><div class="sub" style="margin:0">Risk ${pct(p)} to ${pct(a.new_prob)} (${(a.delta*100).toFixed(1)} points)</div></div><button data-i="${i}">Apply</button></div>`).join(""):`<p class="sub">No single change lowers this customer's risk meaningfully.</p>`;
+  document.querySelectorAll("#play button").forEach(b=>b.onclick=()=>{setState({...state,...d.playbook[b.dataset.i].change})})}
+
+function insights(){$("avg").textContent=S.base_rate;
+  $("insgrid").innerHTML=Object.entries(S.insights).map(([k,rows])=>{const mx=Math.max(...rows.map(r=>r.rate),S.base_rate)*1.1;
+    return `<div class="card"><h3>By ${k.toLowerCase()}</h3>${rows.map(r=>`<div class="hb"><span>${r.label}</span><div class="hbt"><i style="width:${r.rate/mx*100}%"></i><u style="left:${S.base_rate/mx*100}%"></u></div><span class="num">${r.rate}% <span style="color:var(--mute)">(${(r.n/1000).toFixed(1)}k)</span></span></div>`).join("")}</div>`}).join("")}
+
+function customers(){const q=$("q").value.toLowerCase();
+  $("rows").innerHTML=S.customers.filter(c=>!q||String(c.CustomerId).includes(q)||c.Surname.toLowerCase().includes(q)).sort((a,b)=>b.prob-a.prob).map(c=>
+   `<tr data-id="${c.CustomerId}"><td>${c.CustomerId}</td><td>${c.Surname}</td><td>${c.Geography}</td><td>${c.Age}</td><td>${c.NumOfProducts}</td><td>${+c.IsActiveMember?"Yes":"No"}</td><td>${eur(c.Balance)}</td><td><span class="pill" style="background:${col(c.prob)}">${Math.round(c.prob*100)}%</span></td><td>${c.Exited?"Yes":"No"}</td></tr>`).join("");
+  document.querySelectorAll("#rows tr").forEach(tr=>tr.onclick=()=>{const c=S.customers.find(x=>x.CustomerId==tr.dataset.id);
+    setState({CreditScore:c.CreditScore,Age:c.Age,Tenure:c.Tenure,Balance:c.Balance,EstimatedSalary:c.EstimatedSalary,NumOfProducts:c.NumOfProducts,HasCrCard:c.HasCrCard,IsActiveMember:c.IsActiveMember,Geography:c.Geography,Gender:c.Gender});
+    $("who").textContent=`Loaded customer ${c.CustomerId} (${c.Surname}).`;document.querySelector('#nav [data-t=sim]').click();scrollTo(0,0)})}
+
+function model(){const m=S.model;
+  $("kpis").innerHTML=[["AUC",m.auc.toFixed(3),"separation quality"],["Accuracy",pct(m.accuracy),"calls that were right"],["Recall",pct(m.recall),"leavers caught"],["Precision",pct(m.precision),"flags that were right"]].map(k=>`<div class="kpi"><b>${k[1]}</b><span>${k[0]}: ${k[2]}</span></div>`).join("");
+  const mx=Math.max(...m.hist_stay,...m.hist_leave),bw=16;let s="";
+  m.hist_stay.forEach((v,i)=>{s+=`<rect x="${30+i*bw}" y="${170-v/mx*150}" width="${bw/2-1}" height="${v/mx*150}" fill="var(--navy)"/>`});
+  m.hist_leave.forEach((v,i)=>{s+=`<rect x="${30+i*bw+bw/2-1}" y="${170-v/mx*150}" width="${bw/2-1}" height="${v/mx*150}" fill="var(--high)"/>`});
+  $("sep").innerHTML=s+`<line x1="30" x2="350" y1="170" y2="170" stroke="var(--line)"/><text x="30" y="186">0%</text><text x="190" y="186" text-anchor="middle">risk score</text><text x="350" y="186" text-anchor="end">100%</text><text x="200" y="24" style="fill:var(--navy)">■ stayed</text><text x="262" y="24" style="fill:var(--high)">■ left</text>`;
+  const pts=m.roc.map(([x,y])=>`${30+x*200},${200-y*180}`).join(" ");
+  $("roc").innerHTML=`<rect x="30" y="20" width="200" height="180" fill="none" stroke="var(--line)"/><line x1="30" y1="200" x2="230" y2="20" stroke="var(--line)" stroke-dasharray="4"/><polyline points="${pts}" fill="none" stroke="var(--navy)" stroke-width="2.5"/><text x="30" y="216">0</text><text x="230" y="216" text-anchor="end">stayers flagged</text><text x="24" y="24" text-anchor="end">1</text><text x="24" y="200" text-anchor="end">0</text>`;
+  $("cmsub").textContent=`${m.holdout.toLocaleString()} hold-out customers, flagged at 50% risk or more.`;
+  $("cm").innerHTML=`<div class="h"></div><div class="h">Predicted stay</div><div class="h">Predicted leave</div><div class="h">Stayed</div><div class="ok"><b>${m.tn.toLocaleString()}</b>correct</div><div class="bad"><b>${m.fp.toLocaleString()}</b>false alarm</div><div class="h">Left</div><div class="bad"><b>${m.fn.toLocaleString()}</b>missed</div><div class="ok"><b>${m.tp.toLocaleString()}</b>correct</div>`}
+
+(async()=>{S=await (await fetch("/api/stats")).json();
+  S.categories.Geography.forEach(g=>$("Geography").add(new Option(g,g)));S.categories.Gender.forEach(g=>$("Gender").add(new Option(g,g)));
+  F.forEach(k=>$(k).oninput=e=>{state[k]=+e.target.value;labels();run()});
+  ["Geography","Gender"].forEach(k=>$(k).onchange=e=>{state[k]=e.target.value;run()});
+  ["HasCrCard","IsActiveMember"].forEach(k=>$(k).onchange=e=>{state[k]=e.target.checked?1:0;run()});
+  document.querySelectorAll("#NumOfProducts button").forEach(b=>b.onclick=()=>{state.NumOfProducts=+b.dataset.v;
+    document.querySelectorAll("#NumOfProducts button").forEach(x=>x.classList.toggle("on",x===b));run()});
+  $("q").oninput=customers;insights();customers();model();setState(S.defaults)})();
+</script>
+</body>
+</html>

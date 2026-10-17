@@ -1,0 +1,16 @@
+seaborn
+matplotlib
+catboost
+xgboost
+lightgbm
+scikit-learn
+pandas 
+joblib
+category_encoders
+joblib
+numpy
+flask
+gunicorn
+Flask
+numpy
+pandas
